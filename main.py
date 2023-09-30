@@ -3,17 +3,15 @@ kivy.require('2.2.1')
 
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
+from kivy.uix.widget import Widget
+from kivy.uix.boxlayout import BoxLayout
 
-class PathVisInterface(GridLayout):
-    def __init__(self, dimension: int, **kwargs):
+class PathVisUi(BoxLayout):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.cols = self.rows = dimension
-        self.add_widget(Label(text = "hello"))
-
 class PathVis(App):
     def build(self):
-        return PathVisInterface(4)
+        return PathVisUi()
 
 if __name__ == "__main__":
     PathVis().run()
