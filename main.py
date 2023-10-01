@@ -6,10 +6,19 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ListProperty, OptionProperty, ObjectProperty
-from typing import List, Set
+from typing import List, Set,Dict
+from kivy.vector import Vector
+from itertools import chain
+from kivy.clock import Clock
 
 class Cell(Widget):
     color_ = ListProperty([1, 1, 1, 1])
+
+    def __init__(self, x: int, y: int, **kwargs):
+        super().__init__(**kwargs)
+        self.x = x
+        self.y = y
+        self.heuristic = None # evaluated when visualization is invoked
 
     def paint_green(self):
         self.color_ = 102/255, 245/255, 66/255, 1
@@ -17,7 +26,7 @@ class Cell(Widget):
     def paint_black(self):
         self.color_ = [0, 0, 0, 1]
 
-    def paint_red(self):
+    def paint_red(self, _ = None):
         self.color_ = [222/255, 43/255, 11/255, 1]
 
     def paint_white(self):
@@ -36,34 +45,71 @@ class ControlPanel(Widget):
         self.grid.clickType = "End"
 
     def run_search(self):
-        # build the graph
+        if not self.grid.start_cell or not self.grid.end_cell: return None
+        target_node = (self.grid.end_cell.x, self.grid.end_cell.y) 
+        # remove wall nodes
+        for wall_node in self.grid.wall:
+            self.grid.graph.pop(wall_node, None)
         
-        # run the algorithm on the graph (with visualizations)
-        # paint resulting path
-        pass
-
+        for k, v in self.grid.graph.items():
+            # remove edges tqrgeting wall nodes
+            for wall_node in self.grid.wall:
+                if wall_node in v:
+                    v.remove(wall_node)
+            
+            # calculate node heuristic
+            k.heuristic = Vector(k.x, k.y).distance(target_node)
 class Grid(GridLayout):
-    cells: List[Cell] = ListProperty()
+    cells: List[List[Cell]] = ListProperty()
     clickType = OptionProperty("Start", options = ["Start", "Wall", "End"])
     
-    start_cell: Cell = None
-    end_cell: Cell = None
-    wall: Set[Cell] = set()
+    ROWS = 20
+    COLS = 40
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        for i in range(40 * 20):
-            cell = Cell()
-            self.cells.append(cell)
-            self.add_widget(cell)
+
+        self.rows = Grid.ROWS
+        self.cols = Grid.COLS
+
+        self.start_cell: Cell = None
+        self.end_cell: Cell = None
+        self.wall: Set[Cell] = set()
+        # graph representation for the grid
+        self.graph: Dict[Cell, List[Cell]] = dict() 
+
+        for row_ in reversed(range(self.rows)):
+            row_items = []
+            for col_ in range(self.cols):
+                cell = Cell(col_, row_)
+                row_items.append(cell)
+                self.add_widget(cell)
+            self.cells.append(row_items)
+            
+        # populate graph
+        for row in range(Grid.ROWS):
+            for col in range(Grid.COLS):
+                neighbors = []
+                # up
+                if row > 0:
+                    neighbors.append(self.cells[row - 1][col])
+                # down
+                if row < Grid.ROWS - 1:
+                    neighbors.append(self.cells[row + 1][col])
+                # left
+                if col > 0:
+                    neighbors.append(self.cells[row][col - 1])
+                # right
+                if col < Grid.COLS - 1:
+                    neighbors.append(self.cells[row][col + 1])
+                self.graph[self.cells[row][col]] = neighbors  
 
     def cell_at(self, x, y):
-        for cell in self.cells:
+        for cell in chain.from_iterable(self.cells):
             if cell.collide_point(x, y):
                 return cell
             
     def on_touch_down(self, touch):
-        print(len(self.wall))
         if touch.y >= self.y:
             target_cell = self.cell_at(*touch.pos)
             if target_cell:
