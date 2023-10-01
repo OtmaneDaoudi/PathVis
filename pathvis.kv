@@ -1,3 +1,42 @@
-PathVisUi:
+<PathVisUi>:
+    orientation: 'vertical'
+    Grid:
+    ControlPanel:
+        size_hint: 1, .3
+
+<Grid>:
+    cols: 40
+    rows: 20
+    spacing: .5, .5
+
+<ControlPanel>:
+    canvas:
+        Color: 
+            rgba: 169/255,169/255,169/255, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
     Button:
-        text: "text"
+        pos: 0, 0
+        background_color: 102/255, 245/255, 66/255, 1
+        background_normal: ''
+        text: "Start"
+        on_press: 
+    Button:
+        pos: 100, 0
+        background_color: 0, 0, 0, 1
+        background_normal: ''
+        text: "Wall"
+    Button:
+        pos: 200, 0
+        background_normal: ''
+        background_color: 222/255, 43/255, 11/255, 1
+        text: "End"
+
+<Cell>:
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
