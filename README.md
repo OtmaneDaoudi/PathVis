@@ -1,3 +1,3 @@
 # PathVis
-## to run
+## Misc
 pip install "kivy[base]"
