@@ -1,73 +1,62 @@
 from typing import Tuple, List, Dict
 from contextlib import suppress
+from main import Cell
 
+Graph = Dict[Cell, List[Cell]]
 
-class Graph:
-    # An edge is a tuple containg a target node and a cost
-    Edge = Tuple[int, int]
+class A_Star:
+    def __init__(self, graph: Graph):
+        self.graph = graph
 
-    def __init__(self, adj_list: List[List[Edge]], heuristics: List[int]):
-        self.graph: Dict[int, List[Graph.Edge]] = {
-            index: successors for index, successors in enumerate(adj_list)
-        }
-        self.heuristics = heuristics
-        self.g_scores = [float("inf") for _ in range(len(adj_list))]
+    def __neighbors(self, cell: Cell) -> List[Cell]:
+        return self.graph[cell]
+    
+    def __cost(self, cell1: Cell, cell2: Cell) -> int:
+        # we use uniform costs, may be suceptible to future change
+        return 1
+    
+    def __resolve_path(self, cameFrom: Dict[Cell, Cell | None], target_node: Cell) -> List[int]:
+        """ Reconstructs resulting path """
+        path = []
+        curr = target_node
+        while curr:
+            path.append(curr)
+            curr = cameFrom[curr]
+        print(len(path))
+        return path 
 
-    def neighbors(self, node: int) -> List[int]:
-        return [edge[0] for edge in self.graph[node]]
+    def __g(self, cell: Cell) -> int:
+        """ Returns the cost of the optimal path from start to node """
+        return cell.g_score
+    
+    def __h(self, cell: Cell) -> int:
+        """ Returns the estimated cose from node to goal """
+        return cell.heuristic
 
-    def heuristic(self):
-        return self.heuristics
+    def __f(self, cell: Cell) -> int:
+        """ The evaluation fucntion f = g + h """
+        return self.__g(cell) + self.__h(cell)
 
-    def aStartAlgo(self, start_node: int, target_node: int) -> None | List[int]:
-        # helper functions for the algorithm
-        def __cost(node1: int, node2: int) -> int:
-            cost = [edge[1] for edge in self.graph[node1] if edge[0] == node2]
-            return cost[0]
-
-        def __g(node: int) -> int:
-            """ Returns the cost of the optimal path from start to node """
-            return self.g_scores[node]
-
-        def __h(node: int) -> int:
-            """ Returns the estimated cose from node to goal """
-            return self.heuristic()[node]
-
-        def __f(node: int) -> int:
-            """ The evaluation fucntion f = g + h """
-            return __g(node) + __h(node)
-
-        def __resolve_path(closed: List[int]) -> List[int]:
-            curr = target_node
-            res = []
-            while 1:
-                for entry in closed:
-                    if entry[0] == curr:
-                        res.insert(0, entry[0])
-                        closed.remove(entry)
-                        curr = entry[2]
-                        break
-                if curr == None:
-                    return res
-
-        opened, closed = [(start_node, __h(start_node), None)], []
+    def aStartAlgo(self, start_node: Cell, target_node: Cell) -> None | List[Cell]:
+        opened, closed = [(start_node, start_node.heuristic, None)], []
         current_node = None
-        self.g_scores[start_node] = 0
-        # i = 2
+        start_node.g_score = 0
+        cameFrom = {start_node: None}
+
         while 1:
             if not opened:
                 return None
             current_node = opened.pop(0)
             closed.append(current_node)
             if current_node[0] == target_node:
-                return __resolve_path(closed)
-            for child in self.neighbors(current_node[0]):
+                return self.__resolve_path(cameFrom, target_node)
+            for child in self.__neighbors(current_node[0]):
                 # update child's g_score
-                new_g_score = __g(
-                    current_node[0]) + __cost(current_node[0], child)
-                if new_g_score < __g(child):
-                    self.g_scores[child] = new_g_score
-                child_entry = (child, __f(child), current_node[0])
+                new_g_score = self.__g(current_node[0]) + self.__cost(current_node[0], child)
+                if new_g_score < self.__g(child):
+                    child.g_score = new_g_score
+                    cameFrom[child] = current_node[0]
+                child_entry = (child, self.__f(child), current_node[0])
                 # check if the child already in opened or closed with lower evaluation
                 temp = opened + closed
                 filtered_temp = list(filter(
@@ -79,26 +68,6 @@ class Graph:
                         closed.remove(filtered_temp[0])
                 # add child entry to opened
                 opened.append(child_entry)
+                child.paint_yellow()
                 # sort opened
                 opened.sort(key=lambda entry: entry[1])
-            # debugging output to show the evolution of opened and closed alog the iterations
-            # op = f'{opened}'
-            # cl = f'{closed}'
-            # print(f'{i:>2} : {op.ljust(40)} | {cl.ljust(40)}')
-            # i += 1
-
-
-if __name__ == '__main__':
-    adj_list = [
-        [(1, 3), (2, 4), (3, 2)],
-        [(5, 7)],
-        [(4, 2)],
-        [(2, 1), (4, 1)],
-        [(6, 4)],
-        [(6, 4)],
-        []
-    ]
-
-    heuristics = [9, 2, 2, 5, 3, 2, 0]
-    graph = Graph(adj_list, heuristics)
-    print(graph.aStartAlgo(0, 6))

@@ -11,6 +11,8 @@ from kivy.vector import Vector
 from itertools import chain
 from kivy.clock import Clock
 
+import Algorithms.A_star
+
 class Cell(Widget):
     color_ = ListProperty([1, 1, 1, 1])
 
@@ -18,6 +20,7 @@ class Cell(Widget):
         super().__init__(**kwargs)
         self.x = x
         self.y = y
+        self.g_score = float("inf")
         self.heuristic = None # evaluated when visualization is invoked
 
     def paint_green(self):
@@ -26,11 +29,14 @@ class Cell(Widget):
     def paint_black(self):
         self.color_ = [0, 0, 0, 1]
 
-    def paint_red(self, _ = None):
+    def paint_red(self):
         self.color_ = [222/255, 43/255, 11/255, 1]
 
     def paint_white(self):
         self.color_ = [1, 1, 1, 1]
+
+    def paint_yellow(self):
+        self.color_ = [1, 1, 0, 1]
 
 class ControlPanel(Widget):
     grid = ObjectProperty(None)
@@ -59,6 +65,10 @@ class ControlPanel(Widget):
             
             # calculate node heuristic
             k.heuristic = Vector(k.x, k.y).distance(target_node)
+
+        # run search
+        algorithm = Algorithms.A_star.A_Star(self.grid.graph)
+        algorithm.aStartAlgo(self.grid.start_cell, self.grid.end_cell)
 class Grid(GridLayout):
     cells: List[List[Cell]] = ListProperty()
     clickType = OptionProperty("Start", options = ["Start", "Wall", "End"])
@@ -134,6 +144,7 @@ class Grid(GridLayout):
                 if target_cell and target_cell not in [self.start_cell, self.end_cell]:
                     self.wall.add(target_cell)
                     target_cell.paint_black()
+
 class PathVisUi(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
