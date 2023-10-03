@@ -14,6 +14,7 @@ from kivy.clock import Clock
 import Algorithms.A_star
 
 class Cell(Widget):
+    Scheduled_paints = 0
     color_ = ListProperty([1, 1, 1, 1])
 
     def __init__(self, **kwargs):
@@ -35,6 +36,8 @@ class Cell(Widget):
 
     def paint_yellow(self, _ = None):
         self.color_ = [1, 1, 0, 1]
+        if Cell.Scheduled_paints:
+            Cell.Scheduled_paints -= 0
 
     def paint_blue(self, _ = None):
         self.color_ = [138/255, 43/255, 226/255, 1]
@@ -62,13 +65,14 @@ class ControlPanel(Widget):
 
         # run search
         algorithm = Algorithms.A_star.A_Star(graph)
-        path = algorithm.aStartAlgo(self.grid.start_cell, self.grid.end_cell)
-
+        path, delay = algorithm.aStartAlgo(self.grid.start_cell, self.grid.end_cell)
+        
         # trace resulting path
-        # delay = 0.01
-        # for cell in path:
-        #     Clock.schedule_once(cell.paint_blue, 0.2 + delay)
-        #     delay += 0.005
+        delay += 0.1
+        for cell in path:
+            if cell != self.grid.start_cell and cell != self.grid.end_cell:
+                Clock.schedule_once(cell.paint_blue, delay)
+                delay += 0.008
 
 class Grid(GridLayout):
     cells: List[List[Cell]] = ListProperty()
