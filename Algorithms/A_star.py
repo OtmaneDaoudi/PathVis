@@ -1,18 +1,20 @@
-from typing import Tuple, List, Dict
-from contextlib import suppress
+from typing import List, Dict
 from main import Cell
 from kivy.clock import Clock
+from kivy.vector import Vector
 
 Graph = Dict[Cell, List[Cell]]
 
 class A_Star:
-    def __init__(self, graph: Graph):
+    def __init__(self, graph: Graph, start_cell: Cell, end_cell: Cell):
         self.graph = graph
+        self.start_cell = start_cell
+        self.end_cell = end_cell
+        # calculate heuristics
+        self.heuristics = {cell : Vector(cell.center).distance(self.end_cell.center) for cell in self.graph.keys()}
+        self.g_scores = {cell: float("inf") for cell in self.graph.keys()}
 
     def __neighbors(self, cell: Cell) -> List[Cell]:
-        return self.graph[cell]
-    
-    def childs(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
     def __cost(self, cell1: Cell, cell2: Cell) -> int:
@@ -27,46 +29,33 @@ class A_Star:
             total_path.append(current)
         return total_path
 
-    def __g(self, cell: Cell) -> float:
-        """ Returns the cost of the optimal path from start to node """
-        return cell.g_score
-    
-    def __h(self, cell: Cell) -> float:
-        """ Returns the estimated cose from node to goal """
-        return cell.heuristic
-
-    def __f(self, cell: Cell) -> float:
-        """ The evaluation fucntion f = g + h """
-        return self.__g(cell) + self.__h(cell)
-
-    def aStartAlgo(self, start_node: Cell, target_node: Cell) -> None | List[Cell]:
-        opened = [start_node]
+    def aStartAlgo(self) -> None | List[Cell]:
+        opened = [self.start_cell]
         cameFrom = {}
         
-        start_node.g_score = 0
+        self.g_scores[self.start_cell] = 0
         
         f_score = {}
-        f_score[start_node] = start_node.heuristic
+        f_score[self.start_cell] = self.heuristics[self.start_cell]
 
         delay = 0.3
 
         while opened:
             current_node = opened.pop(0)
-            if current_node == target_node:
-                return self.__resolve_path(cameFrom, target_node), delay
+            if current_node == self.end_cell:
+                return self.__resolve_path(cameFrom, self.end_cell), delay
                         
             for child in self.__neighbors(current_node):
-                tentative_score = current_node.g_score + 1
-                if tentative_score < child.g_score:
+                tentative_score = self.g_scores[current_node] + 1
+                if tentative_score < self.g_scores[child]:
                     cameFrom[child] = current_node
-                    child.g_score = tentative_score
-                    f_score[child] = tentative_score + child.heuristic
+                    self.g_scores[child] = tentative_score
+                    f_score[child] = tentative_score + self.heuristics[child]
                     
                     if child not in opened:
                         opened.append(child)
-                        if child != start_node and child != target_node:
+                        if child != self.start_cell and child != self.end_cell:
                             Clock.schedule_once(child.paint_yellow, delay)
-                            Cell.Scheduled_paints += 1
                             delay += 0.005
                         opened.sort(key = lambda entry : f_score[entry])
         return None

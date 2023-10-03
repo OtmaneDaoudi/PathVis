@@ -14,13 +14,7 @@ from kivy.clock import Clock
 import Algorithms.A_star
 
 class Cell(Widget):
-    Scheduled_paints = 0
     color_ = ListProperty([1, 1, 1, 1])
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.g_score = float("inf")
-        self.heuristic = None # evaluated when visualization is invoked
 
     def paint_green(self):
         self.color_ = [102/255, 245/255, 66/255, 1]
@@ -36,8 +30,6 @@ class Cell(Widget):
 
     def paint_yellow(self, _ = None):
         self.color_ = [1, 1, 0, 1]
-        if Cell.Scheduled_paints:
-            Cell.Scheduled_paints -= 0
 
     def paint_blue(self, _ = None):
         self.color_ = [138/255, 43/255, 226/255, 1]
@@ -59,13 +51,10 @@ class ControlPanel(Widget):
 
         # fill graph
         graph = {cell: [child for child in self.grid.graph[cell] if child not in self.grid.wall] for cell in self.grid.graph.keys() if cell not in self.grid.wall}
-        # calculate heuristics
-        for cell in graph.keys():
-            cell.heuristic = Vector(cell.center).distance(self.grid.end_cell.center)
 
         # run search
-        algorithm = Algorithms.A_star.A_Star(graph)
-        path, delay = algorithm.aStartAlgo(self.grid.start_cell, self.grid.end_cell)
+        algorithm = Algorithms.A_star.A_Star(graph, self.grid.start_cell, self.grid.end_cell)
+        path, delay = algorithm.aStartAlgo()
         
         # trace resulting path
         delay += 0.1
