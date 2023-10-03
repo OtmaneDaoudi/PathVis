@@ -16,15 +16,13 @@ import Algorithms.A_star
 class Cell(Widget):
     color_ = ListProperty([1, 1, 1, 1])
 
-    def __init__(self, x: int, y: int, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.x = x
-        self.y = y
         self.g_score = float("inf")
         self.heuristic = None # evaluated when visualization is invoked
 
     def paint_green(self):
-        self.color_ = 102/255, 245/255, 66/255, 1
+        self.color_ = [102/255, 245/255, 66/255, 1]
 
     def paint_black(self):
         self.color_ = [0, 0, 0, 1]
@@ -35,8 +33,11 @@ class Cell(Widget):
     def paint_white(self):
         self.color_ = [1, 1, 1, 1]
 
-    def paint_yellow(self):
+    def paint_yellow(self, _ = None):
         self.color_ = [1, 1, 0, 1]
+
+    def paint_blue(self, _ = None):
+        self.color_ = [138/255, 43/255, 226/255, 1]
 
 class ControlPanel(Widget):
     grid = ObjectProperty(None)
@@ -52,23 +53,23 @@ class ControlPanel(Widget):
 
     def run_search(self):
         if not self.grid.start_cell or not self.grid.end_cell: return None
-        target_node = (self.grid.end_cell.x, self.grid.end_cell.y) 
-        # remove wall nodes
-        for wall_node in self.grid.wall:
-            self.grid.graph.pop(wall_node, None)
-        
-        for k, v in self.grid.graph.items():
-            # remove edges tqrgeting wall nodes
-            for wall_node in self.grid.wall:
-                if wall_node in v:
-                    v.remove(wall_node)
-            
-            # calculate node heuristic
-            k.heuristic = Vector(k.x, k.y).distance(target_node)
+
+        # fill graph
+        graph = {cell: [child for child in self.grid.graph[cell] if child not in self.grid.wall] for cell in self.grid.graph.keys() if cell not in self.grid.wall}
+        # calculate heuristics
+        for cell in graph.keys():
+            cell.heuristic = Vector(cell.center).distance(self.grid.end_cell.center)
 
         # run search
-        algorithm = Algorithms.A_star.A_Star(self.grid.graph)
-        algorithm.aStartAlgo(self.grid.start_cell, self.grid.end_cell)
+        algorithm = Algorithms.A_star.A_Star(graph)
+        path = algorithm.aStartAlgo(self.grid.start_cell, self.grid.end_cell)
+
+        # trace resulting path
+        # delay = 0.01
+        # for cell in path:
+        #     Clock.schedule_once(cell.paint_blue, 0.2 + delay)
+        #     delay += 0.005
+
 class Grid(GridLayout):
     cells: List[List[Cell]] = ListProperty()
     clickType = OptionProperty("Start", options = ["Start", "Wall", "End"])
@@ -88,10 +89,10 @@ class Grid(GridLayout):
         # graph representation for the grid
         self.graph: Dict[Cell, List[Cell]] = dict() 
 
-        for row_ in reversed(range(self.rows)):
+        for row_ in reversed(range(Grid.ROWS)):
             row_items = []
-            for col_ in range(self.cols):
-                cell = Cell(col_, row_)
+            for col_ in range(Grid.COLS):
+                cell = Cell()
                 row_items.append(cell)
                 self.add_widget(cell)
             self.cells.append(row_items)
