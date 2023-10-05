@@ -11,8 +11,6 @@ from itertools import chain
 from kivy.clock import Clock
 from kivy.uix.dropdown import DropDown
 
-import Algorithms.A_star
-import Algorithms.Dfs as Dfs
 class Cell(Widget):
     color_ = ListProperty([1, 1, 1, 1])
 
@@ -61,7 +59,8 @@ class ControlPanel(BoxLayout):
         # path, delay = algorithm.aStartAlgo()
 
         # algorithm = Algorithms.DFS
-        algorithm = Algorithms.Dfs.Dfs(graph, self.grid.start_cell, self.grid.end_cell)
+        from Algorithms.Dfs import Dfs
+        algorithm = Dfs(graph, self.grid.start_cell, self.grid.end_cell)
         algorithm.dfs()
 
         # trace resulting path
