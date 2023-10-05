@@ -7,12 +7,12 @@ from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ListProperty, OptionProperty, ObjectProperty
 from typing import List, Set,Dict
-from kivy.vector import Vector
 from itertools import chain
 from kivy.clock import Clock
+from kivy.uix.dropdown import DropDown
 
 import Algorithms.A_star
-
+import Algorithms.Dfs as Dfs
 class Cell(Widget):
     color_ = ListProperty([1, 1, 1, 1])
 
@@ -34,8 +34,12 @@ class Cell(Widget):
     def paint_blue(self, _ = None):
         self.color_ = [138/255, 43/255, 226/255, 1]
 
-class ControlPanel(Widget):
+class ControlPanel(BoxLayout):
     grid = ObjectProperty(None)
+    algorithm_select = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def mark_start(self):
         self.grid.clickType = "Start"
@@ -53,15 +57,35 @@ class ControlPanel(Widget):
         graph = {cell: [child for child in self.grid.graph[cell] if child not in self.grid.wall] for cell in self.grid.graph.keys() if cell not in self.grid.wall}
 
         # run search
-        algorithm = Algorithms.A_star.A_Star(graph, self.grid.start_cell, self.grid.end_cell)
-        path, delay = algorithm.aStartAlgo()
-        
+        # algorithm = Algorithms.A_star.A_Star(graph, self.grid.start_cell, self.grid.end_cell)
+        # path, delay = algorithm.aStartAlgo()
+
+        # algorithm = Algorithms.DFS
+        algorithm = Algorithms.Dfs.Dfs(graph, self.grid.start_cell, self.grid.end_cell)
+        algorithm.dfs()
+
         # trace resulting path
-        delay += 0.1
-        for cell in path:
-            if cell != self.grid.start_cell and cell != self.grid.end_cell:
-                Clock.schedule_once(cell.paint_blue, delay)
-                delay += 0.008
+        # delay += 0.1
+        # for cell in path:
+        #     if cell != self.grid.start_cell and cell != self.grid.end_cell:
+        #         Clock.schedule_once(cell.paint_blue, delay)
+        #         delay += 0.008
+
+    def clear_grid(self):
+        for row in range(self.grid.ROWS):
+            for col in range(self.grid.COLS):
+                self.grid.cells[row][col].paint_white()
+
+        # remove wall cells
+        self.grid.wall.clear()
+
+        # remove start cell
+        if self.grid.start_cell: 
+            self.grid.start_cell = None
+
+        # remove end cell
+        if self.grid.end_cell:
+            self.grid.end_cell = None
 
 class Grid(GridLayout):
     cells: List[List[Cell]] = ListProperty()
