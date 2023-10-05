@@ -1,6 +1,7 @@
 from typing import List, Dict
-from main import Cell
 from kivy.clock import Clock
+from main import Cell
+from Algorithms.A_star import Graph
 
 Graph: Dict[Cell, List[Cell]]
 
@@ -41,7 +42,8 @@ class Dfs:
                     delay += 0.005
 
             # push child cells
-            dfs_stack.extend(self.__neighbors(current_cell))
+            neighbors = self.__neighbors(current_cell[0])
+            dfs_stack.extend([(cell, current_cell[0]) for cell in neighbors if cell not in list(zip(*visited))[0]])
                 
 
 
