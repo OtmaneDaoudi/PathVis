@@ -61,14 +61,19 @@ class ControlPanel(BoxLayout):
         # algorithm = Algorithms.DFS
         from Algorithms.Dfs import Dfs
         algorithm = Dfs(graph, self.grid.start_cell, self.grid.end_cell)
-        algorithm.dfs()
+        path, delay = algorithm.dfs()
+
+        # from Algorithms.A_star import A_Star
+        # algorithm = A_Star(graph, self.grid.start_cell, self.grid.end_cell)
+        # path, delay = algorithm.aStartAlgo()
+
 
         # trace resulting path
-        # delay += 0.1
-        # for cell in path:
-        #     if cell != self.grid.start_cell and cell != self.grid.end_cell:
-        #         Clock.schedule_once(cell.paint_blue, delay)
-        #         delay += 0.008
+        delay += 0.1
+        for cell in path:
+            if cell != self.grid.start_cell and cell != self.grid.end_cell:
+                Clock.schedule_once(cell.paint_blue, delay)
+                delay += 0.008
 
     def clear_grid(self):
         for row in range(self.grid.ROWS):

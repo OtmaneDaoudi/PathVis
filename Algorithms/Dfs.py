@@ -13,41 +13,36 @@ class Dfs:
 
     def __resolve_path(self, visited: List[Cell]):
         """ reconstructed the resulting path from the visited list """
-        # path = []
-        # current = visited.pop()
-        # while:
-        #     if current[0] == self.end_cell:
-
-        # return path
-        return None
+        path = []
+        curr = self.end_cell
+        while curr:
+            parent = visited[curr]
+            path.append(curr)
+            if parent:
+                path.append(parent)
+            curr = visited[curr]
+        return path
 
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
     def dfs(self):
-        visited = []
+        visited = {}
         dfs_stack = [(self.start_cell, None)]
         delay = 0.03
         while dfs_stack:
             # explore current node
-            current_cell = dfs_stack.pop()
-            visited.append(current_cell)
+            cell, parent = dfs_stack.pop()
+            visited[cell] = parent
 
-            if current_cell[0] == self.end_cell:
+            if cell == self.end_cell:
                 return self.__resolve_path(visited), delay
             else:
                 # mark current cell on the graph
-                if current_cell[0] != self.start_cell:
-                    Clock.schedule_once(current_cell[0].paint_yellow, delay)
+                if cell != self.start_cell:
+                    Clock.schedule_once(cell.paint_yellow, delay)
                     delay += 0.005
 
             # push child cells
-            neighbors = self.__neighbors(current_cell[0])
-            dfs_stack.extend([(cell, current_cell[0]) for cell in neighbors if cell not in list(zip(*visited))[0]])
-                
-
-
-
-
-        
-        
+            neighbors = self.__neighbors(cell)
+            dfs_stack.extend([(cell_, cell) for cell_ in neighbors if cell_ not in visited])
