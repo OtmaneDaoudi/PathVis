@@ -5,7 +5,7 @@ from Algorithms.A_star import Graph
 
 Graph: Dict[Cell, List[Cell]]
 
-class DFS:
+class BFS:
     def __init__(self, graph: Graph, start_cell: Cell, end_cell: Cell):
         self.graph = graph
         self.start_cell = start_cell
@@ -26,23 +26,21 @@ class DFS:
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
-    def dfs(self):
+    def bfs(self):
         visited = {}
-        dfs_stack = [(self.start_cell, None)]
+        bfs_queue = [(self.start_cell, None)]
         delay = 0.03
-        while dfs_stack:
+        while bfs_queue:
             # explore current node
-            cell, parent = dfs_stack.pop()
+            cell, parent = bfs_queue.pop(0)
+            if cell in visited: continue
             visited[cell] = parent
-
-            if cell == self.end_cell:
-                return self.__resolve_path(visited), delay
+            if cell == self.end_cell: return self.__resolve_path(visited), delay
             else:
                 # mark current cell on the graph
                 if cell != self.start_cell:
                     Clock.schedule_once(cell.paint_yellow, delay)
                     delay += 0.005
-
-            # push child cells
+            # enqueue child cells
             neighbors = self.__neighbors(cell)
-            dfs_stack.extend([(cell_, cell) for cell_ in neighbors if cell_ not in visited])
+            bfs_queue.extend([(cell_, cell) for cell_ in neighbors if cell_ not in visited])
