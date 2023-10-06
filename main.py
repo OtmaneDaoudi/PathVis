@@ -58,10 +58,13 @@ class ControlPanel(BoxLayout):
         # algorithm = Algorithms.A_star.A_Star(graph, self.grid.start_cell, self.grid.end_cell)
         # path, delay = algorithm.aStartAlgo()
 
-        # algorithm = Algorithms.DFS
-        from Algorithms.Dfs import Dfs
-        algorithm = Dfs(graph, self.grid.start_cell, self.grid.end_cell)
-        path, delay = algorithm.dfs()
+        # from Algorithms.DFS import DFS
+        # algorithm = DFS(graph, self.grid.start_cell, self.grid.end_cell)
+        # path, delay = algorithm.dfs()
+
+        from Algorithms.BFS import BFS
+        algorithm = BFS(graph, self.grid.start_cell, self.grid.end_cell)
+        path, delay = algorithm.bfs()
 
         # from Algorithms.A_star import A_Star
         # algorithm = A_Star(graph, self.grid.start_cell, self.grid.end_cell)
@@ -95,8 +98,11 @@ class Grid(GridLayout):
     cells: List[List[Cell]] = ListProperty()
     clickType = OptionProperty("Start", options = ["Start", "Wall", "End"])
     
-    ROWS = 20
-    COLS = 40
+    # ROWS = 20
+    # COLS = 40
+
+    ROWS = 30
+    COLS = 50
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
