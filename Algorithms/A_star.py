@@ -29,7 +29,7 @@ class A_Star:
             total_path.append(current)
         return total_path
 
-    def aStartAlgo(self) -> None | List[Cell]:
+    def run(self) -> None | List[Cell]:
         opened = [self.start_cell]
         cameFrom = {}
         

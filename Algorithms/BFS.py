@@ -26,21 +26,22 @@ class BFS:
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
-    def bfs(self):
-        visited = {}
-        bfs_queue = [(self.start_cell, None)]
+    def run(self):
+        visited = {self.start_cell: None}
+        bfs_queue = [self.start_cell]
         delay = 0.03
         while bfs_queue:
-            # explore current node
-            cell, parent = bfs_queue.pop(0)
-            if cell in visited: continue
-            visited[cell] = parent
+            # process current node
+            cell = bfs_queue.pop(0)
             if cell == self.end_cell: return self.__resolve_path(visited), delay
             else:
                 # mark current cell on the graph
                 if cell != self.start_cell:
                     Clock.schedule_once(cell.paint_yellow, delay)
-                    delay += 0.005
-            # enqueue child cells
+                    delay += 0.002
+            # enqueue child cells & mark them as visited
             neighbors = self.__neighbors(cell)
-            bfs_queue.extend([(cell_, cell) for cell_ in neighbors if cell_ not in visited])
+            for cell_ in neighbors:
+                if cell_ not in visited:
+                    visited[cell_] = cell
+                    bfs_queue.append(cell_)

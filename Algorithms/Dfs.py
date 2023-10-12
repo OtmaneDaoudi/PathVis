@@ -26,23 +26,23 @@ class DFS:
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
-    def dfs(self):
-        visited = {}
-        dfs_stack = [(self.start_cell, None)]
-        delay = 0.03
+    def run(self):
+        visited = {self.start_cell: None}
+        dfs_stack = [self.start_cell]
+        delay = 0.02
         while dfs_stack:
-            # explore current node
-            cell, parent = dfs_stack.pop()
-            visited[cell] = parent
-
-            if cell == self.end_cell:
-                return self.__resolve_path(visited), delay
+            # process current node
+            cell = dfs_stack.pop()
+            if cell == self.end_cell: return self.__resolve_path(visited), delay
             else:
                 # mark current cell on the graph
                 if cell != self.start_cell:
                     Clock.schedule_once(cell.paint_yellow, delay)
-                    delay += 0.005
+                    delay += 0.002
 
-            # push child cells
+            # push child cells & mark them as visited
             neighbors = self.__neighbors(cell)
-            dfs_stack.extend([(cell_, cell) for cell_ in neighbors if cell_ not in visited])
+            for cell_ in neighbors:
+                if cell_ not in visited:
+                    visited[cell_] = cell
+                    dfs_stack.append(cell_)

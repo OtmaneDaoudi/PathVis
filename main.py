@@ -4,12 +4,16 @@ kivy.require('2.2.1')
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.widget import Widget
+from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ListProperty, OptionProperty, ObjectProperty
 from typing import List, Set,Dict
 from itertools import chain
 from kivy.clock import Clock
 from kivy.uix.dropdown import DropDown
+
+class Algorithm_select(DropDown):
+    pass
 
 class Cell(Widget):
     color_ = ListProperty([1, 1, 1, 1])
@@ -34,10 +38,18 @@ class Cell(Widget):
 
 class ControlPanel(BoxLayout):
     grid = ObjectProperty(None)
-    algorithm_select = ObjectProperty(None)
+    algo_select_button: Button = ObjectProperty(None)
+    algorithm = OptionProperty("A*", options = ["A*", "BFS", "DFS"])  
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        # initialize drop-down options
+        def init_dropdown(dt):
+            dropdown = Algorithm_select()
+            self.algo_select_button.bind(on_release=dropdown.open)
+            dropdown.bind(on_select = lambda instance, data: setattr(self, 'algorithm', data))
+        Clock.schedule_once(init_dropdown)
 
     def mark_start(self):
         self.grid.clickType = "Start"
@@ -55,21 +67,17 @@ class ControlPanel(BoxLayout):
         graph = {cell: [child for child in self.grid.graph[cell] if child not in self.grid.wall] for cell in self.grid.graph.keys() if cell not in self.grid.wall}
 
         # run search
-        # algorithm = Algorithms.A_star.A_Star(graph, self.grid.start_cell, self.grid.end_cell)
-        # path, delay = algorithm.aStartAlgo()
-
-        # from Algorithms.DFS import DFS
-        # algorithm = DFS(graph, self.grid.start_cell, self.grid.end_cell)
-        # path, delay = algorithm.dfs()
-
-        from Algorithms.BFS import BFS
-        algorithm = BFS(graph, self.grid.start_cell, self.grid.end_cell)
-        path, delay = algorithm.bfs()
-
-        # from Algorithms.A_star import A_Star
-        # algorithm = A_Star(graph, self.grid.start_cell, self.grid.end_cell)
-        # path, delay = algorithm.aStartAlgo()
-
+        search = None
+        if self.algorithm == "A*":
+            from Algorithms.A_star import A_Star
+            search = A_Star(graph, self.grid.start_cell, self.grid.end_cell)
+        elif self.algorithm == "BFS":
+            from Algorithms.DFS import DFS
+            search = DFS(graph, self.grid.start_cell, self.grid.end_cell)
+        elif self.algorithm == "DFS":
+            from Algorithms.BFS import BFS
+            search = BFS(graph, self.grid.start_cell, self.grid.end_cell)
+        path, delay = search.run()
 
         # trace resulting path
         delay += 0.1
@@ -96,13 +104,13 @@ class ControlPanel(BoxLayout):
 
 class Grid(GridLayout):
     cells: List[List[Cell]] = ListProperty()
-    clickType = OptionProperty("Start", options = ["Start", "Wall", "End"])
-    
-    # ROWS = 20
-    # COLS = 40
+    clickType = OptionProperty("Start", options = ["Start", "Wall", "End"])    
 
-    ROWS = 30
-    COLS = 50
+    ROWS = 20
+    COLS = 40
+
+    # ROWS = 50
+    # COLS = 70
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
