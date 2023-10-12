@@ -3,31 +3,22 @@
     Grid:
         id: grid_
     ControlPanel:
-        grid: grid_
         size_hint: 1, .3
+        grid: grid_
         
 <Grid>:
     spacing: .5, .5
 
 <ControlPanel>:
-    algo_select_button: algo_select_button
     orientation: "vertical"
-    # canvas:
-    #     Color:
-    #         rgba: 105/255, 105/255, 105/255, 1
-    #     Rectangle:
-    #         pos: self.pos
-    #         size: self.size
+    canvas:
+        Color:
+            rgba: 105/255, 105/255, 105/255, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
         orientation: "horizontal"
-        Image:
-            source: "info.png"
-            size: 20, 20
-        Label:
-            text: "lorem ipsum"
-    BoxLayout:
-        orientation: "horizontal"
-        # spacing: 2
         Button:
             background_color: 102/255, 245/255, 66/255, 1
             background_normal: ''
@@ -48,12 +39,15 @@
             on_press: root.clear_grid()    
     BoxLayout:
         orientation: "horizontal"
-        Button:
-            id: algo_select_button
+        Label:
+            text: "Algorithm : "
+        Spinner:
             text: root.algorithm
-        Button:
-            text: "Visualize!"
-            on_press: root.run_search()
+            values: 'A*', 'BFS', 'DFS'
+            on_text: root.algorithm = self.text
+    Button:
+        text: "Visualize!"
+        on_press: root.run_search()
 
 <Cell>:
     canvas:
@@ -62,20 +56,3 @@
         Rectangle:
             size: self.size
             pos: self.pos
-
-<Algorithm_select>:
-    Button:
-        text: 'A*'
-        size_hint_y: None
-        height: 44
-        on_release: root.select('A*')
-    Button:
-        text: 'BFS'
-        size_hint_y: None
-        height: 44
-        on_release: root.select('BFS')
-    Button:
-        text: 'DFS'
-        size_hint_y: None
-        height: 44
-        on_release: root.select('DFS')

@@ -4,16 +4,11 @@ kivy.require('2.2.1')
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.widget import Widget
-from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ListProperty, OptionProperty, ObjectProperty
 from typing import List, Set,Dict
 from itertools import chain
 from kivy.clock import Clock
-from kivy.uix.dropdown import DropDown
-
-class Algorithm_select(DropDown):
-    pass
 
 class Cell(Widget):
     color_ = ListProperty([1, 1, 1, 1])
@@ -38,22 +33,14 @@ class Cell(Widget):
 
 class ControlPanel(BoxLayout):
     grid = ObjectProperty(None)
-    algo_select_button: Button = ObjectProperty(None)
     algorithm = OptionProperty("A*", options = ["A*", "BFS", "DFS"])  
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # initialize drop-down options
-        def init_dropdown(dt):
-            dropdown = Algorithm_select()
-            self.algo_select_button.bind(on_release=dropdown.open)
-            dropdown.bind(on_select = lambda instance, data: setattr(self, 'algorithm', data))
-        Clock.schedule_once(init_dropdown)
-
     def mark_start(self):
         self.grid.clickType = "Start"
-
+        
     def mark_wall(self):
         self.grid.clickType = "Wall"
 
