@@ -29,7 +29,7 @@ class DFS:
     def run(self):
         visited = {self.start_cell: None}
         dfs_stack = [self.start_cell]
-        delay = 0.3
+        delay = 0.05
         while dfs_stack:
             # process current node
             cell = dfs_stack.pop()

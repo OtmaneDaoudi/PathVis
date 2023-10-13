@@ -102,9 +102,6 @@ class Grid(GridLayout):
     ROWS = 30
     COLS = 50
 
-    # ROWS = 50
-    # COLS = 70
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -114,7 +111,7 @@ class Grid(GridLayout):
         self.start_cell: Cell = None
         self.end_cell: Cell = None
         self.wall: Set[Cell] = set()
-        # graph representation for the grid
+        # graph representation of the grid
         self.graph: Dict[Cell, List[Cell]] = dict() 
 
         for row_ in reversed(range(Grid.ROWS)):

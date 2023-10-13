@@ -38,7 +38,7 @@ class A_Star:
         f_score = {}
         f_score[self.start_cell] = self.heuristics[self.start_cell]
 
-        delay = 0.3
+        delay = 0.2
 
         while opened:
             current_node = opened.pop(0)
@@ -47,7 +47,7 @@ class A_Star:
             
             if current_node != self.start_cell and current_node != self.end_cell:
                 Clock.schedule_once(current_node.paint_blue, delay)
-                delay += 0.004
+                delay += 0.002
                         
             for child in self.__neighbors(current_node):
                 tentative_score = self.g_scores[current_node] + self.__cost(current_node, child)
@@ -60,6 +60,6 @@ class A_Star:
                         opened.append(child)
                         if child != self.start_cell and child != self.end_cell:
                             Clock.schedule_once(child.paint_yellow, delay)
-                            delay += 0.004
+                            delay += 0.002
                         opened.sort(key = lambda entry : f_score[entry])
         return None
