@@ -29,7 +29,7 @@ class BFS:
     def run(self):
         visited = {self.start_cell: None}
         bfs_queue = [self.start_cell]
-        delay = 0.03
+        delay = 0.005
         while bfs_queue:
             # process current node
             cell = bfs_queue.pop(0)
@@ -37,11 +37,14 @@ class BFS:
             else:
                 # mark current cell on the graph
                 if cell != self.start_cell:
-                    Clock.schedule_once(cell.paint_yellow, delay)
-                    delay += 0.002
+                    Clock.schedule_once(cell.paint_blue, delay)
+                    delay += 0.001
             # enqueue child cells & mark them as visited
             neighbors = self.__neighbors(cell)
             for cell_ in neighbors:
                 if cell_ not in visited:
+                    if cell_ != self.start_cell and cell_ != self.end_cell:
+                        Clock.schedule_once(cell_.paint_yellow, delay)
+                        delay += 0.001
                     visited[cell_] = cell
                     bfs_queue.append(cell_)

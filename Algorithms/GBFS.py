@@ -31,10 +31,13 @@ class GBFS:
     def run(self):
         gbfs_queue = [self.start_cell]
         visited = {self.start_cell: None}
-        delay = 0.02
+        delay = 0.3
         while gbfs_queue:
             # explore current node
             current = gbfs_queue.pop(0)
+            if current != self.start_cell:
+                Clock.schedule_once(current.paint_blue, delay)
+                delay += 0.001
             for child in self.__neighbors(current):
                 if child not in visited:
                     visited[child] = current
@@ -46,7 +49,7 @@ class GBFS:
 
                         # mark child on the grid
                         Clock.schedule_once(child.paint_yellow, delay)
-                        delay += 0.002
+                        delay += 0.004
         return None
 
             

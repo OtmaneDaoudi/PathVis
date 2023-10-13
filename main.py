@@ -31,9 +31,12 @@ class Cell(Widget):
     def paint_blue(self, _ = None):
         self.color_ = [138/255, 43/255, 226/255, 1]
 
+    def paint_pink(self, _ = None):
+        self.color_ = [1, 0, 243/255, 1]
+
 class ControlPanel(BoxLayout):
     grid = ObjectProperty(None)
-    algorithm = OptionProperty("A*", options = ["A*", "BFS", "DFS", "GBFS"])  
+    algorithm = OptionProperty("A*", options = ["A*", "Breadth-first", "Depth-first", "Greedy best-first"])  
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -58,13 +61,13 @@ class ControlPanel(BoxLayout):
         if self.algorithm == "A*":
             from Algorithms.A_star import A_Star
             search = A_Star(graph, self.grid.start_cell, self.grid.end_cell)
-        elif self.algorithm == "DFS":
+        elif self.algorithm == "Depth-first":
             from Algorithms.DFS import DFS
             search = DFS(graph, self.grid.start_cell, self.grid.end_cell)
-        elif self.algorithm == "BFS":
+        elif self.algorithm == "Breadth-first":
             from Algorithms.BFS import BFS
             search = BFS(graph, self.grid.start_cell, self.grid.end_cell)
-        elif self.algorithm == "GBFS":
+        elif self.algorithm == "Greedy best-first":
             from Algorithms.GBFS import GBFS
             search = GBFS(graph, self.grid.start_cell, self.grid.end_cell)
         path, delay = search.run()
@@ -73,7 +76,7 @@ class ControlPanel(BoxLayout):
         delay += 0.1
         for cell in path:
             if cell != self.grid.start_cell and cell != self.grid.end_cell:
-                Clock.schedule_once(cell.paint_blue, delay)
+                Clock.schedule_once(cell.paint_pink, delay)
                 delay += 0.008
 
     def clear_grid(self):

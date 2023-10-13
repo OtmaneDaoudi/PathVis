@@ -12,8 +12,6 @@ class A_Star:
         self.end_cell = end_cell
         # calculate heuristics
         self.heuristics = {cell : Vector(cell.pos).distance(self.end_cell.pos) for cell in self.graph.keys()}
-        for i in self.heuristics.values():
-            print(i)
         self.g_scores = {cell: float("inf") for cell in self.graph.keys()}
 
     def __neighbors(self, cell: Cell) -> List[Cell]:
@@ -46,6 +44,10 @@ class A_Star:
             current_node = opened.pop(0)
             if current_node == self.end_cell:
                 return self.__resolve_path(cameFrom, self.end_cell), delay
+            
+            if current_node != self.start_cell and current_node != self.end_cell:
+                Clock.schedule_once(current_node.paint_blue, delay)
+                delay += 0.004
                         
             for child in self.__neighbors(current_node):
                 tentative_score = self.g_scores[current_node] + self.__cost(current_node, child)
