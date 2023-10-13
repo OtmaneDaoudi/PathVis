@@ -33,7 +33,7 @@ class Cell(Widget):
 
 class ControlPanel(BoxLayout):
     grid = ObjectProperty(None)
-    algorithm = OptionProperty("A*", options = ["A*", "BFS", "DFS"])  
+    algorithm = OptionProperty("A*", options = ["A*", "BFS", "DFS", "GBFS"])  
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -58,14 +58,17 @@ class ControlPanel(BoxLayout):
         if self.algorithm == "A*":
             from Algorithms.A_star import A_Star
             search = A_Star(graph, self.grid.start_cell, self.grid.end_cell)
-        elif self.algorithm == "BFS":
+        elif self.algorithm == "DFS":
             from Algorithms.DFS import DFS
             search = DFS(graph, self.grid.start_cell, self.grid.end_cell)
-        elif self.algorithm == "DFS":
+        elif self.algorithm == "BFS":
             from Algorithms.BFS import BFS
             search = BFS(graph, self.grid.start_cell, self.grid.end_cell)
+        elif self.algorithm == "GBFS":
+            from Algorithms.GBFS import GBFS
+            search = GBFS(graph, self.grid.start_cell, self.grid.end_cell)
         path, delay = search.run()
-
+        
         # trace resulting path
         delay += 0.1
         for cell in path:
@@ -93,8 +96,8 @@ class Grid(GridLayout):
     cells: List[List[Cell]] = ListProperty()
     clickType = OptionProperty("Start", options = ["Start", "Wall", "End"])    
 
-    ROWS = 20
-    COLS = 40
+    ROWS = 30
+    COLS = 50
 
     # ROWS = 50
     # COLS = 70

@@ -11,7 +11,9 @@ class A_Star:
         self.start_cell = start_cell
         self.end_cell = end_cell
         # calculate heuristics
-        self.heuristics = {cell : Vector(cell.center).distance(self.end_cell.center) for cell in self.graph.keys()}
+        self.heuristics = {cell : Vector(cell.pos).distance(self.end_cell.pos) for cell in self.graph.keys()}
+        for i in self.heuristics.values():
+            print(i)
         self.g_scores = {cell: float("inf") for cell in self.graph.keys()}
 
     def __neighbors(self, cell: Cell) -> List[Cell]:
@@ -19,7 +21,7 @@ class A_Star:
     
     def __cost(self, cell1: Cell, cell2: Cell) -> int:
         # we use uniform costs, may be suceptible to future change
-        return 1
+        return Vector(cell1.pos).distance(cell2.pos)
     
     def __resolve_path(self, cameFrom: Dict[Cell, Cell | None], current: Cell) -> List[int]:
         """ Reconstructs resulting path """
@@ -46,7 +48,7 @@ class A_Star:
                 return self.__resolve_path(cameFrom, self.end_cell), delay
                         
             for child in self.__neighbors(current_node):
-                tentative_score = self.g_scores[current_node] + 1
+                tentative_score = self.g_scores[current_node] + self.__cost(current_node, child)
                 if tentative_score < self.g_scores[child]:
                     cameFrom[child] = current_node
                     self.g_scores[child] = tentative_score
@@ -56,6 +58,6 @@ class A_Star:
                         opened.append(child)
                         if child != self.start_cell and child != self.end_cell:
                             Clock.schedule_once(child.paint_yellow, delay)
-                            delay += 0.005
+                            delay += 0.004
                         opened.sort(key = lambda entry : f_score[entry])
         return None
