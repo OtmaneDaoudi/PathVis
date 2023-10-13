@@ -1,4 +1,3 @@
-# PathVis
 ## What is it?
 PathVis is a tool to visualize famous graph algorithms, it is built using Python and the Kivy GUI library. 
 ## Getting started
