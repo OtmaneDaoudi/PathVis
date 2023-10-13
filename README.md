@@ -1,5 +1,14 @@
 ## What is it?
-PathVis is a tool to visualize famous graph algorithms, it is built using Python and the Kivy GUI library. 
+PathVis is a tool to visualize famous graph algorithms, it is built using Python and the Kivy GUI library.
+At the moment, the app includes the following algorithms:
+
+✅ Breadth-first search
+
+✅ Depth-first search
+
+✅ A*
+
+✅ Greedy Best-first search
 ## Getting started
 In order to run the application you'll need to:
   1. Install [Python 3.11](https://www.python.org/downloads)
