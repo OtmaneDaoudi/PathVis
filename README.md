@@ -18,4 +18,5 @@ In order to run the application you'll need to:
 
 ## Demo
 After launching the app, you can select different types of nodes (start, wall, end) as well as the desired algorithm from the menu below.
+
 ![demo](https://github.com/OtmaneDaoudi/PathVis/assets/63020343/cfebb6a6-83c3-431a-abea-5ee0dd930f7f)
