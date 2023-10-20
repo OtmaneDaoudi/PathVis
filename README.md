@@ -16,7 +16,6 @@ In order to run the application you'll need to:
      ```pip install kivy==2.2.1```
   3. Run the code: ```python main.py```
 
-## Demos
+## Demo
 After launching the app, you can select different types of nodes (start, wall, end) as well as the desired algorithm from the menu below.
-
-![ezgif-4-0b28c09077](https://github.com/OtmaneDaoudi/PathVis/assets/63020343/6c168c60-39c1-4d13-9bd5-c1e5cd1b9406)
+![demo](https://github.com/OtmaneDaoudi/PathVis/assets/63020343/cfebb6a6-83c3-431a-abea-5ee0dd930f7f)
