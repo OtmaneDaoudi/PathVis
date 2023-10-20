@@ -13,7 +13,7 @@ class GBFS:
         self.end_cell = end_cell
         self.heuristics = {cell : Vector(cell.center).distance(self.end_cell.center) for cell in self.graph.keys()}
 
-    def __resolve_path(self, visited: List[Cell]):
+    def __resolve_path(self, visited: List[Cell]) -> List[Cell]:
         """ reconstructed the resulting path from the visited list """
         path = []
         curr = self.end_cell
@@ -28,16 +28,18 @@ class GBFS:
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
-    def run(self):
+    def run(self) -> None | List[Cell]:
         gbfs_queue = [self.start_cell]
         visited = {self.start_cell: None}
         delay = 0.3
         while gbfs_queue:
             # explore current node
             current = gbfs_queue.pop(0)
+            # mark current node as fully explored (blue)
             if current != self.start_cell:
                 Clock.schedule_once(current.paint_blue, delay)
                 delay += 0.001
+
             for child in self.__neighbors(current):
                 if child not in visited:
                     visited[child] = current
@@ -47,7 +49,7 @@ class GBFS:
                         gbfs_queue.append(child)
                         gbfs_queue.sort(key = lambda entry: self.heuristics[entry])
 
-                        # mark child on the grid
+                        # mark child as discovered
                         Clock.schedule_once(child.paint_yellow, delay)
                         delay += 0.004
         return None

@@ -11,7 +11,7 @@ class BFS:
         self.start_cell = start_cell
         self.end_cell = end_cell
 
-    def __resolve_path(self, visited: List[Cell]):
+    def __resolve_path(self, visited: List[Cell]) -> List[Cell]:
         """ reconstructed the resulting path from the visited list """
         path = []
         curr = self.end_cell
@@ -26,7 +26,7 @@ class BFS:
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
-    def run(self):
+    def run(self) -> None | Dict[Cell, Cell]:
         visited = {self.start_cell: None}
         bfs_queue = [self.start_cell]
         delay = 0.005
@@ -35,16 +35,18 @@ class BFS:
             cell = bfs_queue.pop(0)
             if cell == self.end_cell: return self.__resolve_path(visited), delay
             else:
-                # mark current cell on the graph
+                # mark current node on the graph as fully explored (blue)
                 if cell != self.start_cell:
                     Clock.schedule_once(cell.paint_blue, delay)
                     delay += 0.001
-            # enqueue child cells & mark them as visited
+            # enqueue child nodes
             neighbors = self.__neighbors(cell)
             for cell_ in neighbors:
                 if cell_ not in visited:
+                    visited[cell_] = cell
+                    bfs_queue.append(cell_)
+                    # mark current child as discovered (yellow)
                     if cell_ != self.start_cell and cell_ != self.end_cell:
                         Clock.schedule_once(cell_.paint_yellow, delay)
                         delay += 0.001
-                    visited[cell_] = cell
-                    bfs_queue.append(cell_)
+        return None

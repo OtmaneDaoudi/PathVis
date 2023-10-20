@@ -53,7 +53,7 @@ class ControlPanel(BoxLayout):
     def run_search(self):
         if not self.grid.start_cell or not self.grid.end_cell: return None
 
-        # fill graph
+        # construct the graph based on the current grid's state
         graph = {cell: [child for child in self.grid.graph[cell] if child not in self.grid.wall] for cell in self.grid.graph.keys() if cell not in self.grid.wall}
 
         # run search
@@ -111,12 +111,12 @@ class Grid(GridLayout):
         self.start_cell: Cell = None
         self.end_cell: Cell = None
         self.wall: Set[Cell] = set()
-        # graph representation of the grid
+        # static representation of the grid, mapping each node to it's neighbors (not considering start, end or wall nodes)
         self.graph: Dict[Cell, List[Cell]] = dict() 
 
-        for row_ in reversed(range(Grid.ROWS)):
+        for _ in reversed(range(Grid.ROWS)):
             row_items = []
-            for col_ in range(Grid.COLS):
+            for _ in range(Grid.COLS):
                 cell = Cell()
                 row_items.append(cell)
                 self.add_widget(cell)

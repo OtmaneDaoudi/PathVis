@@ -11,7 +11,7 @@ class DFS:
         self.start_cell = start_cell
         self.end_cell = end_cell
 
-    def __resolve_path(self, visited: List[Cell]):
+    def __resolve_path(self, visited: List[Cell]) -> List[Cell]:
         """ reconstructed the resulting path from the visited list """
         path = []
         curr = self.end_cell
@@ -26,7 +26,7 @@ class DFS:
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
-    def run(self):
+    def run(self) -> None | List[Cell]:
         visited = {self.start_cell: None}
         dfs_stack = [self.start_cell]
         delay = 0.05
@@ -49,3 +49,4 @@ class DFS:
                         delay += 0.004
                     visited[cell_] = cell
                     dfs_stack.append(cell_)
+        return None

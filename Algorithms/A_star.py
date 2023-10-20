@@ -17,11 +17,11 @@ class A_Star:
     def __neighbors(self, cell: Cell) -> List[Cell]:
         return self.graph[cell]
     
-    def __cost(self, cell1: Cell, cell2: Cell) -> int:
+    def __cost(self, cell1: Cell, cell2: Cell) -> float:
         # we use uniform costs, may be suceptible to future change
         return Vector(cell1.pos).distance(cell2.pos)
     
-    def __resolve_path(self, cameFrom: Dict[Cell, Cell | None], current: Cell) -> List[int]:
+    def __resolve_path(self, cameFrom: Dict[Cell, Cell | None], current: Cell) -> List[Cell]:
         """ Reconstructs resulting path """
         total_path = [current]
         while current in cameFrom.keys():
@@ -45,6 +45,7 @@ class A_Star:
             if current_node == self.end_cell:
                 return self.__resolve_path(cameFrom, self.end_cell), delay
             
+            # mark cell as fully explored (blue)
             if current_node != self.start_cell and current_node != self.end_cell:
                 Clock.schedule_once(current_node.paint_blue, delay)
                 delay += 0.002
@@ -58,8 +59,10 @@ class A_Star:
                     
                     if child not in opened:
                         opened.append(child)
+                        opened.sort(key = lambda entry : f_score[entry])
+                        
+                        # mark node as discovered (yellow)
                         if child != self.start_cell and child != self.end_cell:
                             Clock.schedule_once(child.paint_yellow, delay)
                             delay += 0.002
-                        opened.sort(key = lambda entry : f_score[entry])
         return None
